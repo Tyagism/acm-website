@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACM USAR - Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="../acm-logo.svg" type="image/svg+xml">
+</head>
+<body class="admin-body">
+    <div class="admin-login" id="admin-login">
+        <div class="admin-login-container">
+            <div class="admin-login-logo">
+                <img src="../acm-logo.svg" alt="ACM Logo" class="logo">
+                <h1><span class="gradient-text">ACM</span> | <span class="text-highlight">USAR</span></h1>
+                <p class="admin-subtitle">Admin Portal</p>
+            </div>
+            <form id="login-form" class="admin-login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-with-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required autocomplete="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span>Sign In</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                </button>
+                <div class="forgot-password-container">
+                    <a href="#" id="forgot-password-link" class="forgot-password-link">Forgot password?</a>
+                </div>
+                <div id="login-error" class="form-message error"></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="admin-dashboard hidden" id="admin-dashboard">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="admin-sidebar-overlay" id="admin-sidebar-overlay"></div>
+        
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <div class="admin-sidebar-logo">
+                    <img src="../acm-logo.svg" alt="ACM Logo" class="logo">
+                </div>
+                <h2><span class="gradient-text">ACM</span> | <span class="text-highlight">USAR</span></h2>
+            </div>
+            <nav class="admin-nav">
+                <a href="#dashboard" class="admin-nav-link active" data-section="dashboard-section">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#team" class="admin-nav-link" data-section="team-section">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Team Members
+                </a>
+                <a href="#events" class="admin-nav-link" data-section="events-section">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    Events
+                </a>
+                <a href="#applications" class="admin-nav-link" data-section="applications-section">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Applications
+                </a>
+                <a href="#messages" class="admin-nav-link" data-section="messages-section">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Messages
+                </a>
+                <a href="#settings" class="admin-nav-link" data-section="settings-section">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    Settings
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <button id="logout-btn" class="btn btn-secondary btn-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <!-- Mobile Menu Toggle Button -->
+                <button class="admin-menu-toggle" id="admin-menu-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                
+                <div class="admin-header-title">
+                    <h1 id="section-title">Dashboard</h1>
+                </div>
+                <div class="admin-header-actions">
+                    <div class="admin-user">
+                        <span id="admin-user-name">Admin User</span>
+                        <div class="admin-avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="admin-section active">
+                    <div class="admin-stats">
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon admin-stat-icon-blue">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <div class="admin-stat-content">
+                                <h3 class="admin-stat-value" id="team-count">0</h3>
+                                <p class="admin-stat-label">Team Members</p>
+                            </div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon admin-stat-icon-purple">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                            <div class="admin-stat-content">
+                                <h3 class="admin-stat-value" id="events-count">0</h3>
+                                <p class="admin-stat-label">Events</p>
+                            </div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon admin-stat-icon-green">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </div>
+                            <div class="admin-stat-content">
+                                <h3 class="admin-stat-value" id="applications-count">0</h3>
+                                <p class="admin-stat-label">Applications</p>
+                                <small class="admin-stat-updated" id="applications-updated">Updating...</small>
+                                <div class="admin-stat-actions">
+                                    <button id="refresh-applications-btn" class="admin-stat-btn" title="Refresh count">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                        </svg>
+                                    </button>
+                                    <button id="export-applications-btn" class="admin-stat-btn" title="Export to CSV">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon admin-stat-icon-pink">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="admin-stat-content">
+                                <h3 class="admin-stat-value" id="messages-count">0</h3>
+                                <p class="admin-stat-label">Messages</p>
+                                <small class="admin-stat-updated" id="messages-updated">Updating...</small>
+                                <div class="admin-stat-actions">
+                                    <button id="refresh-messages-btn" class="admin-stat-btn" title="Refresh count">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                        </svg>
+                                    </button>
+                                    <button id="export-messages-btn" class="admin-stat-btn" title="Export to CSV">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-row">
+                        <div class="admin-card admin-card-lg">
+                            <div class="admin-card-header">
+                                <h3>Recent Applications</h3>
+                                <a href="#applications" class="admin-card-link" data-section="applications-section">View All</a>
+                            </div>
+                            <div class="admin-card-body">
+                                <div class="admin-table-container">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Student ID</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recent-applications">
+                                            <tr>
+                                                <td colspan="4" class="admin-table-empty">Loading applications...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="admin-card admin-card-sm">
+                            <div class="admin-card-header">
+                                <h3>Upcoming Events</h3>
+                                <a href="#events" class="admin-card-link" data-section="events-section">View All</a>
+                            </div>
+                            <div class="admin-card-body">
+                                <ul class="admin-event-list" id="upcoming-events">
+                                    <li class="admin-event-item">
+                                        <div class="admin-event-date">Loading events...</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Team Members Section -->
+                <section id="team-section" class="admin-section">
+                    <div class="admin-section-header">
+                        <h2>Team Members</h2>
+                        <button id="add-team-member-btn" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>Add Member</span>
+                        </button>
+                    </div>
+
+                    <div class="admin-tabs">
+                        <button class="admin-tab active" data-team="Executive Board">Executive Board</button>
+                        <button class="admin-tab" data-team="Technical Team">Technical Team</button>
+                        <button class="admin-tab" data-team="Events Team">Events Team</button>
+                    </div>
+
+                    <div class="admin-team-grid" id="admin-team-grid">
+                        <div class="admin-loading">Loading team members...</div>
+                    </div>
+
+                    <!-- Team Member Modal -->
+                    <div class="admin-modal" id="team-modal">
+                        <div class="admin-modal-content">
+                            <div class="admin-modal-header">
+                                <h3 id="team-modal-title">Add Team Member</h3>
+                                <button class="admin-modal-close" id="team-modal-close">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="admin-modal-body">
+                                <form id="team-form">
+                                    <input type="hidden" id="team-id" name="id">
+                                    <div class="form-group">
+                                        <label for="team-name">Name</label>
+                                        <input type="text" id="team-name" name="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="team-position">Position</label>
+                                        <input type="text" id="team-position" name="position" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="team-image">Image URL</label>
+                                        <input type="text" id="team-image" name="image" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="team-linkedin">LinkedIn URL</label>
+                                        <input type="text" id="team-linkedin" name="linkedin">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="team-group">Team</label>
+                                        <select id="team-group" name="team" required>
+                                            <option value="Executive Board">Executive Board</option>
+                                            <option value="Technical Team">Technical Team</option>
+                                            <option value="Events Team">Events Team</option>
+                                        </select>
+                                    </div>
+                                    <div class="admin-modal-footer">
+                                        <button type="button" class="btn btn-secondary" id="team-cancel-btn">Cancel</button>
+                                        <button type="submit" class="btn btn-primary" id="team-save-btn">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Events Section -->
+                <section id="events-section" class="admin-section">
+                    <div class="admin-section-header">
+                        <h2>Events</h2>
+                        <button id="add-event-btn" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>Add Event</span>
+                        </button>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-body">
+                            <div class="admin-table-container">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Date</th>
+                                            <th>Location</th>
+                                            <th>Attendees</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="events-table">
+                                        <tr>
+                                            <td colspan="5" class="admin-table-empty">Loading events...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Modal -->
+                    <div class="admin-modal" id="event-modal">
+                        <div class="admin-modal-content">
+                            <div class="admin-modal-header">
+                                <h3 id="event-modal-title">Add Event</h3>
+                                <button class="admin-modal-close" id="event-modal-close">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="admin-modal-body">
+                                <form id="event-form">
+                                    <input type="hidden" id="event-id" name="id">
+                                    <div class="form-group">
+                                        <label for="event-title">Title</label>
+                                        <input type="text" id="event-title" name="title" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="event-description">Description</label>
+                                        <textarea id="event-description" name="description" rows="4" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="event-date">Date</label>
+                                        <input type="date" id="event-date" name="date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="event-location">Location</label>
+                                        <input type="text" id="event-location" name="location" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="event-attendees">Expected Attendees</label>
+                                        <input type="number" id="event-attendees" name="attendees" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="event-image">Image URL</label>
+                                        <input type="text" id="event-image" name="image" required>
+                                    </div>
+                                    <div class="admin-modal-footer">
+                                        <button type="button" class="btn btn-secondary" id="event-cancel-btn">Cancel</button>
+                                        <button type="submit" class="btn btn-primary" id="event-save-btn">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Applications Section -->
+                <section id="applications-section" class="admin-section">
+                    <div class="admin-section-header">
+                        <h2>Membership Applications</h2>
+                        <div class="admin-section-actions">
+                            <button id="refresh-applications-btn" class="btn btn-primary" title="Refresh Data">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="1 4 1 10 7 10"></polyline>
+                                    <polyline points="23 20 23 14 17 14"></polyline>
+                                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                                </svg>
+                            </button>
+                            <button id="export-applications-btn" class="btn btn-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span>Export CSV</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-info-banner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12" y2="8"></line>
+                        </svg>
+                        <span>Showing real-time data from the export server. </span>
+                        <span id="applications-updated">Last updated: Never</span>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-body">
+                            <div class="admin-table-container">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Student ID</th>
+                                            <th>Year of Study</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="applications-table">
+                                        <tr>
+                                            <td colspan="6" class="admin-table-empty">Loading applications...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Application Modal -->
+                    <div class="admin-modal" id="application-modal">
+                        <div class="admin-modal-content">
+                            <div class="admin-modal-header">
+                                <h3>Application Details</h3>
+                                <button class="admin-modal-close" id="application-modal-close">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="admin-modal-body">
+                                <div class="admin-detail-item">
+                                    <span class="admin-detail-label">Full Name:</span>
+                                    <span class="admin-detail-value" id="application-name"></span>
+                                </div>
+                                <div class="admin-detail-item">
+                                    <span class="admin-detail-label">Email:</span>
+                                    <span class="admin-detail-value" id="application-email"></span>
+                                </div>
+                                <div class="admin-detail-item">
+                                    <span class="admin-detail-label">Student ID:</span>
+                                    <span class="admin-detail-value" id="application-studentId"></span>
+                                </div>
+                                <div class="admin-detail-item">
+                                    <span class="admin-detail-label">Year of Study:</span>
+                                    <span class="admin-detail-value" id="application-yearOfStudy"></span>
+                                </div>
+                                <div class="admin-detail-item">
+                                    <span class="admin-detail-label">Date Submitted:</span>
+                                    <span class="admin-detail-value" id="application-timestamp"></span>
+                                </div>
+                                <div class="admin-modal-footer">
+                                    <button type="button" class="btn btn-secondary" id="application-close-btn">Close</button>
+                                    <button type="button" class="btn btn-danger" id="application-delete-btn">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Messages Section -->
+                <section id="messages-section" class="admin-section">
+                    <div class="admin-section-header">
+                        <h2>Contact Messages</h2>
+                        <div class="admin-section-actions">
+                            <button id="refresh-messages-btn" class="btn btn-primary" title="Refresh Data">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="1 4 1 10 7 10"></polyline>
+                                    <polyline points="23 20 23 14 17 14"></polyline>
+                                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                                </svg>
+                            </button>
+                            <button id="export-messages-btn" class="btn btn-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span>Export CSV</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-info-banner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12" y2="8"></line>
+                        </svg>
+                        <span>Showing real-time data from the export server. </span>
+                        <span id="messages-updated">Last updated: Never</span>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-body">
+                            <div class="admin-table-container">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Message</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="messages-table">
+                                        <tr>
+                                            <td colspan="5" class="admin-table-empty">Loading messages...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message Modal -->
+                    <div class="admin-modal" id="message-modal">
+                        <div class="admin-modal-content">
+                            <div class="admin-modal-header">
+                                <h3>Message Details</h3>
+                                <button class="admin-modal-close" id="message-modal-close">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="admin-modal-body">
+                                <div class="admin-detail-item">
+                                    <span class="admin-detail-label">Name:</span>
+                                    <span class="admin-detail-value" id="message-name"></span>
+                                </div>
+                                <div class="admin-detail-item">
+                                    <span class="admin-detail-label">Email:</span>
+                                    <span class="admin-detail-value" id="message-email"></span>
+                                </div>
+                                <div class="admin-detail-item">
+                                    <span class="admin-detail-label">Date:</span>
+                                    <span class="admin-detail-value" id="message-timestamp"></span>
+                                </div>
+                                <div class="admin-detail-item">
+                                    <span class="admin-detail-label">Message:</span>
+                                    <div class="admin-detail-message" id="message-content"></div>
+                                </div>
+                                <div class="admin-modal-footer">
+                                    <button type="button" class="btn btn-secondary" id="message-close-btn">Close</button>
+                                    <button type="button" class="btn btn-danger" id="message-delete-btn">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings-section" class="admin-section">
+                    <div class="admin-section-header">
+                        <h2>Settings</h2>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>Firebase Configuration</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            <form id="firebase-form">
+                                <div class="form-group">
+                                    <label for="firebase-apiKey">API Key</label>
+                                    <input type="text" id="firebase-apiKey" name="apiKey">
+                                </div>
+                                <div class="form-group">
+                                    <label for="firebase-authDomain">Auth Domain</label>
+                                    <input type="text" id="firebase-authDomain" name="authDomain">
+                                </div>
+                                <div class="form-group">
+                                    <label for="firebase-projectId">Project ID</label>
+                                    <input type="text" id="firebase-projectId" name="projectId">
+                                </div>
+                                <div class="form-group">
+                                    <label for="firebase-storageBucket">Storage Bucket</label>
+                                    <input type="text" id="firebase-storageBucket" name="storageBucket">
+                                </div>
+                                <div class="form-group">
+                                    <label for="firebase-messagingSenderId">Messaging Sender ID</label>
+                                    <input type="text" id="firebase-messagingSenderId" name="messagingSenderId">
+                                </div>
+                                <div class="form-group">
+                                    <label for="firebase-appId">App ID</label>
+                                    <input type="text" id="firebase-appId" name="appId">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Configuration</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3>Admin Account</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            <form id="admin-form">
+                                <div class="form-group">
+                                    <label for="admin-email">Email</label>
+                                    <input type="email" id="admin-email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-name">Display Name</label>
+                                    <input type="text" id="admin-name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-current-password">Current Password</label>
+                                    <input type="password" id="admin-current-password" name="currentPassword" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-new-password">New Password</label>
+                                    <input type="password" id="admin-new-password" name="newPassword">
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-confirm-password">Confirm New Password</label>
+                                    <input type="password" id="admin-confirm-password" name="confirmPassword">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Account</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- Admin JavaScript -->
+    <script src="js/admin.js"></script>
+
+    <!-- Password Reset Modal -->
+    <div class="admin-modal" id="reset-password-modal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h3>Reset Password</h3>
+                <button class="admin-modal-close" id="reset-modal-close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="admin-modal-body">
+                <p>Enter your email address below to receive a password reset link. We'll send you instructions to reset your password.</p>
+                <form id="reset-password-form" class="admin-login-form">
+                    <div class="form-group">
+                        <label for="reset-email">Email Address</label>
+                        <div class="input-with-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <input type="email" id="reset-email" name="email" placeholder="Enter your email" required autocomplete="email">
+                        </div>
+                    </div>
+                    <div id="reset-message" class="form-message"></div>
+                    <div class="admin-modal-footer">
+                        <button type="button" class="btn btn-secondary" id="reset-cancel-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="reset-submit-btn">
+                            <span>Send Reset Link</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "title": "AI Workshop Series: Deep Learning Fundamentals",
+      "description": "Join us for an intensive workshop on deep learning fundamentals. Learn about neural networks, backpropagation, and implement your first model using TensorFlow and PyTorch.",
+      "date": "2025-03-15",
+      "location": "USAR Campus, Lab 302",
+      "attendees": 120,
+      "image": "images/event-1.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Hackathon 2025: Automation Solutions",
+      "description": "A 48-hour coding competition where teams build innovative automation solutions to real-world problems. Cash prizes worth ₹1,00,000 to be won!",
+      "date": "2025-04-22",
+      "location": "USAR Innovation Hub",
+      "attendees": 200,
+      "image": "images/event-2.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Tech Talk: Future of Cloud Computing with AWS",
+      "description": "Industry experts from Amazon Web Services discuss emerging trends and the future landscape of cloud technologies. Networking session follows the talk.",
+      "date": "2025-05-10",
+      "location": "Virtual Event",
+      "attendees": 350,
+      "image": "images/event-3.jpg"
+    }
+  ]
+}

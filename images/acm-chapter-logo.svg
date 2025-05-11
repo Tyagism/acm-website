@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9333EA;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="380" height="380" rx="20" fill="none" stroke="url(#grad1)" stroke-width="4" />
+  <rect x="30" y="30" width="340" height="340" rx="10" fill="none" stroke="url(#grad1)" stroke-width="2" />
+  
+  <text x="200" y="120" font-family="Arial, sans-serif" font-size="100" font-weight="bold" text-anchor="middle" fill="url(#grad1)">acm</text>
+  
+  <text x="200" y="170" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#666">GGSIP UNIVERSITY</text>
+  <text x="200" y="200" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#666">STUDENT CHAPTER</text>
+  
+  <text x="200" y="250" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#666">UNIVERSITY SCHOOL OF</text>
+  <text x="200" y="275" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#666">AUTOMATION AND ROBOTICS</text>
+  
+  <circle cx="100" cy="330" r="20" fill="url(#grad1)" />
+  <circle cx="150" cy="330" r="20" fill="url(#grad1)" />
+  <circle cx="200" cy="330" r="20" fill="url(#grad1)" />
+  <circle cx="250" cy="330" r="20" fill="url(#grad1)" />
+  <circle cx="300" cy="330" r="20" fill="url(#grad1)" />
+</svg>
