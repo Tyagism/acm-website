@@ -1,3 +1,4 @@
+// Package main provides an export server for the ACM website
 package main
 
 import (
@@ -7,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -33,75 +33,106 @@ type ExportMessage struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-// setupCORS configures CORS headers for all responses
-func setupCORS(w http.ResponseWriter) {
+// setupExportCORS configures CORS headers for all responses
+func setupExportCORS(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 }
 
-// handleOptions responds to preflight requests
-func handleOptions(w http.ResponseWriter, r *http.Request) {
-	setupCORS(w)
-	w.WriteHeader(http.StatusOK)
+// exportNoCacheMiddleware adds headers to prevent caching for certain file types
+func exportNoCacheMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Add no-cache headers for JSON and image files
+		path := r.URL.Path
+		if strings.HasSuffix(path, ".json") ||
+			strings.HasSuffix(path, ".jpg") ||
+			strings.HasSuffix(path, ".jpeg") ||
+			strings.HasSuffix(path, ".png") {
+			w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+			w.Header().Set("Pragma", "no-cache")
+			w.Header().Set("Expires", "0")
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// Main function for the export server
+func RunExportServer() {
+	log.Println("Starting ACM Export Server...")
+
+	// Create router
+	mux := http.NewServeMux()
+
+	// Register export endpoints
+	mux.HandleFunc("/export/applications", handleExportApplications)
+	mux.HandleFunc("/export/messages", handleExportMessages)
+
+	// Add a simple ping endpoint
+	mux.HandleFunc("/export/ping", func(w http.ResponseWriter, r *http.Request) {
+		setupExportCORS(w)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "ok",
+			"server": "export",
+		})
+	})
+
+	// Register static file server with cache control middleware
+	fileServer := http.FileServer(http.Dir("."))
+	mux.Handle("/", exportNoCacheMiddleware(fileServer))
+
+	// Start server
+	log.Println("Export server is running on http://localhost:8082")
+	log.Fatal(http.ListenAndServe(":8082", mux))
 }
 
 // Export applications as CSV
 func exportApplicationsCSV(appPath string) ([]byte, error) {
-	log.Printf("Reading applications from: %s", appPath)
-
-	// Read the JSON file
+	// Read applications JSON file
 	data, err := ioutil.ReadFile(appPath)
 	if err != nil {
-		log.Printf("Error reading file: %v", err)
-		return nil, fmt.Errorf("failed to read file: %w", err)
+		return nil, fmt.Errorf("error reading applications file: %v", err)
 	}
 
-	// Parse the JSON
-	var applications []ExportApplication
+	// Parse JSON
+	var applications []map[string]interface{}
 	if err := json.Unmarshal(data, &applications); err != nil {
-		log.Printf("Error parsing JSON: %v", err)
-		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+		return nil, fmt.Errorf("error parsing applications JSON: %v", err)
 	}
 
-	log.Printf("Found %d applications", len(applications))
-
-	// Create CSV writer
-	buffer := &strings.Builder{}
-	csvWriter := csv.NewWriter(buffer)
+	// Create CSV file in memory
+	buf := &strings.Builder{}
+	csvWriter := csv.NewWriter(buf)
 
 	// Write header
-	header := []string{"ID", "FullName", "Email", "StudentID", "School", "YearOfStudy", "Timestamp"}
+	header := []string{"Name", "Email", "Student ID", "School", "Year Of Study", "Status", "Submission Date"}
 	if err := csvWriter.Write(header); err != nil {
-		log.Printf("Error writing header: %v", err)
-		return nil, fmt.Errorf("error writing CSV header: %w", err)
+		return nil, fmt.Errorf("error writing CSV header: %v", err)
 	}
 
-	// Write data rows
+	// Write rows
 	for _, app := range applications {
-		record := []string{
-			app.ID,
-			app.FullName,
-			app.Email,
-			app.StudentID,
-			app.School,
-			app.YearOfStudy,
-			app.Timestamp.Format(time.RFC3339),
+		row := []string{
+			fmt.Sprint(app["fullName"]),
+			fmt.Sprint(app["email"]),
+			fmt.Sprint(app["studentId"]),
+			fmt.Sprint(app["school"]),
+			fmt.Sprint(app["yearOfStudy"]),
+			fmt.Sprint(app["status"]),
+			fmt.Sprint(app["submissionDate"]),
 		}
-		if err := csvWriter.Write(record); err != nil {
-			log.Printf("Error writing record: %v", err)
-			return nil, fmt.Errorf("error writing CSV record: %w", err)
+		if err := csvWriter.Write(row); err != nil {
+			return nil, fmt.Errorf("error writing CSV row: %v", err)
 		}
 	}
 
 	csvWriter.Flush()
 	if err := csvWriter.Error(); err != nil {
-		log.Printf("Error flushing writer: %v", err)
-		return nil, fmt.Errorf("error flushing CSV writer: %w", err)
+		return nil, fmt.Errorf("error flushing CSV writer: %v", err)
 	}
 
-	log.Printf("Successfully generated applications CSV, size: %d bytes", buffer.Len())
-	return []byte(buffer.String()), nil
+	return []byte(buf.String()), nil
 }
 
 // Export messages as CSV
@@ -112,14 +143,14 @@ func exportMessagesCSV(msgPath string) ([]byte, error) {
 	data, err := ioutil.ReadFile(msgPath)
 	if err != nil {
 		log.Printf("Error reading file: %v", err)
-		return nil, fmt.Errorf("failed to read file: %w", err)
+		return nil, fmt.Errorf("failed to read file: %v", err)
 	}
 
 	// Parse the JSON
 	var messages []ExportMessage
 	if err := json.Unmarshal(data, &messages); err != nil {
 		log.Printf("Error parsing JSON: %v", err)
-		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+		return nil, fmt.Errorf("failed to parse JSON: %v", err)
 	}
 
 	log.Printf("Found %d messages", len(messages))
@@ -132,7 +163,7 @@ func exportMessagesCSV(msgPath string) ([]byte, error) {
 	header := []string{"ID", "Name", "Email", "Message", "Timestamp"}
 	if err := csvWriter.Write(header); err != nil {
 		log.Printf("Error writing header: %v", err)
-		return nil, fmt.Errorf("error writing CSV header: %w", err)
+		return nil, fmt.Errorf("error writing CSV header: %v", err)
 	}
 
 	// Write data rows
@@ -146,14 +177,14 @@ func exportMessagesCSV(msgPath string) ([]byte, error) {
 		}
 		if err := csvWriter.Write(record); err != nil {
 			log.Printf("Error writing record: %v", err)
-			return nil, fmt.Errorf("error writing CSV record: %w", err)
+			return nil, fmt.Errorf("error writing CSV record: %v", err)
 		}
 	}
 
 	csvWriter.Flush()
 	if err := csvWriter.Error(); err != nil {
 		log.Printf("Error flushing writer: %v", err)
-		return nil, fmt.Errorf("error flushing CSV writer: %w", err)
+		return nil, fmt.Errorf("error flushing CSV writer: %v", err)
 	}
 
 	log.Printf("Successfully generated messages CSV, size: %d bytes", buffer.Len())
@@ -162,9 +193,29 @@ func exportMessagesCSV(msgPath string) ([]byte, error) {
 
 func handleExportApplications(w http.ResponseWriter, r *http.Request) {
 	// Set CORS headers first
-	setupCORS(w)
+	setupExportCORS(w)
 
 	log.Printf("Handling export applications request")
+
+	// Handle OPTIONS method
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Handle test parameter
+	if r.URL.Query().Get("test") == "1" {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "ok",
+		})
+		return
+	}
 
 	// Get path from query parameter or use default
 	path := r.URL.Query().Get("path")
@@ -199,9 +250,20 @@ func handleExportApplications(w http.ResponseWriter, r *http.Request) {
 
 func handleExportMessages(w http.ResponseWriter, r *http.Request) {
 	// Set CORS headers first
-	setupCORS(w)
+	setupExportCORS(w)
 
 	log.Printf("Handling export messages request")
+
+	// Handle OPTIONS method
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	// Get path from query parameter or use default
 	path := r.URL.Query().Get("path")
@@ -231,61 +293,5 @@ func handleExportMessages(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error writing response: %v", err)
 	} else {
 		log.Printf("Successfully sent messages CSV response")
-	}
-}
-
-func main() {
-	// Print the current working directory
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Export server - Current working directory: %s", cwd)
-
-	// Check if data directory exists
-	dataDir := filepath.Join(cwd, "data")
-	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
-		log.Printf("Export server - Data directory does not exist: %s", dataDir)
-		// Create data directory
-		if err := os.Mkdir(dataDir, 0755); err != nil {
-			log.Printf("Export server - Failed to create data directory: %v", err)
-		} else {
-			log.Printf("Export server - Created data directory: %s", dataDir)
-		}
-	} else {
-		log.Printf("Export server - Data directory exists: %s", dataDir)
-
-		// List files in data directory
-		files, err := ioutil.ReadDir(dataDir)
-		if err != nil {
-			log.Printf("Export server - Error reading data directory: %v", err)
-		} else {
-			log.Printf("Export server - Files in data directory:")
-			for _, file := range files {
-				log.Printf("  - %s (%d bytes)", file.Name(), file.Size())
-			}
-		}
-	}
-
-	// Set up routes
-	http.HandleFunc("/export/applications", handleExportApplications)
-	http.HandleFunc("/export/messages", handleExportMessages)
-	http.HandleFunc("/options", handleOptions)
-
-	// Add a simple ping handler
-	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		setupCORS(w)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"status":"ok", "message":"Export server is running"}`))
-	})
-
-	// Serve static files
-	http.Handle("/", http.FileServer(http.Dir(".")))
-
-	// Start the server
-	port := 8082 // Use a different port to avoid conflict
-	log.Printf("Starting export server on port %d...", port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
-		log.Fatalf("Export server error: %v", err)
 	}
 }

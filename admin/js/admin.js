@@ -97,17 +97,17 @@ document.addEventListener("DOMContentLoaded", () => {
           members: [
             {
               id: "1",
-              name: "Aditya Sharma",
+              name: "Harshit Tyagi",
               position: "Chapter Chair",
-              image: "../images/acm-logo.svg",
-              linkedin: "https://linkedin.com/in/aditya-sharma"
+              image: "../images/harshit.jpg",
+              linkedin: "https://www.linkedin.com/in/harshitism"
             },
             {
               id: "2",
-              name: "Priya Patel",
+              name: "Sumit Kumar",
               position: "Vice Chair",
-              image: "../images/acm-logo.svg",
-              linkedin: "https://linkedin.com/in/priya-patel"
+              image: "../images/sumit.jpg",
+              linkedin: "https://www.linkedin.com/in/sumit-kumar-3b835b251"
             }
           ]
         },
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
           date: "2025-06-15",
           location: "Computer Science Building, Room 101",
           attendees: 30,
-          image: "../images/acm-logo.svg"
+          image: "../images/6.jpg"
         },
         {
           id: "2",
@@ -154,7 +154,16 @@ document.addEventListener("DOMContentLoaded", () => {
           date: "2025-07-20",
           location: "Engineering Center, Main Hall",
           attendees: 50,
-          image: "../images/acm-logo.svg"
+          image: "../images/5.jpg"
+        },
+        {
+          id: "3",
+          title: "Tech Talk: Future of Computing",
+          description: "Join us for an engaging discussion on emerging technologies",
+          date: "2025-08-10",
+          location: "Virtual Event",
+          attendees: 100,
+          image: "../images/1.jpg"
         }
       ]
     },
@@ -953,73 +962,56 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Render Events
     renderEvents() {
+      const eventsContainer = this.elements.eventsContainer;
+      if (!eventsContainer) return;
+      
+      eventsContainer.innerHTML = "";
+      
       if (this.data.events && this.data.events.length > 0) {
-        this.elements.eventsTable.innerHTML = "";
-        
         this.data.events.forEach(event => {
-          // Ensure we have valid properties
-          const title = event.title || 'Unnamed Event';
-          const location = event.location || 'TBD';
-          const attendees = event.attendees || 0;
-          
           // Format date
           let formattedDate = "TBD";
           if (event.date) {
             try {
-          const eventDate = new Date(event.date);
+              const eventDate = new Date(event.date);
               formattedDate = eventDate.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-          });
+                year: "numeric",
+                month: "long", 
+                day: "numeric"
+              });
             } catch (e) {
               console.error("Error formatting date:", e);
             }
           }
           
-          const row = document.createElement("tr");
+          // Add cache-busting parameter to ensure the image is refreshed
+          const imageUrl = event.image || "../images/acm-logo.svg";
+          const cachedImageUrl = imageUrl + "?t=" + new Date().getTime();
           
-          row.innerHTML = `
-            <td>${title}</td>
-            <td>${formattedDate}</td>
-            <td>${location}</td>
-            <td>${attendees}</td>
-            <td>
-              <div class="admin-table-actions">
-                <button class="admin-table-btn edit" data-id="${event.id || ''}">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
+          const eventCard = document.createElement("div");
+          eventCard.className = "event-card";
+          eventCard.dataset.id = event.id;
+          
+          eventCard.innerHTML = `
+            <div class="event-card-header">
+              <div class="event-image">
+                <img src="${cachedImageUrl}" alt="${event.title}" onerror="this.src='../images/acm-logo.svg'">
+              </div>
+              <div class="event-actions">
+                <button class="edit-event-btn" title="Edit event">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
                 </button>
-                <button class="admin-table-btn delete" data-id="${event.id || ''}">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                  </svg>
+                <button class="delete-event-btn" title="Delete event">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                 </button>
               </div>
-            </td>
+            </div>
           `;
           
-          this.elements.eventsTable.appendChild(row);
-          
-          // Add event listeners
-          const editBtn = row.querySelector(".admin-table-btn.edit");
-          const deleteBtn = row.querySelector(".admin-table-btn.delete");
-          
-          editBtn.addEventListener("click", () => {
-            this.editEvent(event);
-          });
-          
-          deleteBtn.addEventListener("click", () => {
-            this.deleteEvent(event);
-          });
+          eventsContainer.appendChild(eventCard);
         });
       } else {
-        this.elements.eventsTable.innerHTML = `
+        eventsContainer.innerHTML = `
           <tr>
             <td colspan="5" class="admin-table-empty">No events found.</td>
           </tr>

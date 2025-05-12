@@ -258,16 +258,16 @@ document.addEventListener("DOMContentLoaded", () => {
         name: "Executive Board",
         members: [
           {
-            name: "Aditya Sharma",
+            name: "Harshit Tyagi",
             position: "Chapter Chair",
-            image: "images/acm-logo.svg",
-            linkedin: "https://linkedin.com/in/aditya-sharma"
+            image: "images/harshit.jpg",
+            linkedin: "https://www.linkedin.com/in/harshitism"
           },
           {
-            name: "Priya Patel",
+            name: "Sumit Kumar",
             position: "Vice Chair",
-            image: "images/acm-logo.svg",
-            linkedin: "https://linkedin.com/in/priya-patel"
+            image: "images/sumit.jpg",
+            linkedin: "https://www.linkedin.com/in/sumit-kumar-3b835b251"
           },
           {
             name: "Rahul Gupta",
@@ -296,6 +296,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const executiveTeam = data.teams.find((team) => team.name === "Executive Board");
 
     if (executiveTeam && executiveTeam.members) {
+      // Preload images with cache busting
+      executiveTeam.members.forEach(member => {
+        if (member.image) {
+          const img = new Image();
+          img.src = member.image + "?t=" + new Date().getTime();
+        }
+      });
+      
       executiveTeam.members.forEach((member, index) => {
         const memberCard = document.createElement("div");
         memberCard.className = "team-card";
@@ -303,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
         memberCard.setAttribute("data-aos-delay", (index * 100).toString());
         
         // Use fallback image if member.image is missing or invalid
-        const imageUrl = member.image || "images/acm-logo.svg";
+        const imageUrl = member.image ? (member.image + "?t=" + new Date().getTime()) : "images/acm-logo.svg";
         
         memberCard.innerHTML = `
           <div class="team-image-container">
@@ -340,7 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Load team members with fallback
-  fetch("data/team.json")
+  fetch("data/team.json?v=" + Math.floor(Date.now() / 1000))
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -366,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
         date: "2025-06-15",
         location: "Computer Science Building, Room 101",
         attendees: 30,
-        image: "images/acm-logo.svg"
+        image: "images/6.jpg"
       },
       {
         id: "2",
@@ -375,7 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
         date: "2025-07-20",
         location: "Engineering Center, Main Hall",
         attendees: 50,
-        image: "images/acm-logo.svg"
+        image: "images/5.jpg"
       },
       {
         id: "3",
@@ -384,7 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
         date: "2025-08-10",
         location: "Virtual Event",
         attendees: 100,
-        image: "images/acm-logo.svg"
+        image: "images/1.jpg"
       }
     ]
   };
@@ -424,11 +432,13 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Use fallback image if event.image is missing or invalid
         const imageUrl = event.image || "images/acm-logo.svg";
+        // Add cache-busting parameter to ensure the image is refreshed
+        const cachedImageUrl = imageUrl + "?t=" + new Date().getTime();
         
         eventSlide.innerHTML = `
           <div class="event-card">
             <div class="event-image">
-              <img src="${imageUrl}" alt="${event.title}" onerror="this.src='images/acm-logo.svg'">
+              <img src="${cachedImageUrl}" alt="${event.title}" onerror="this.src='images/acm-logo.svg'">
             </div>
             <div class="event-content">
               <span class="event-date">${formattedDate}</span>
@@ -505,7 +515,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Load events with fallback
-  fetch("data/events.json")
+  fetch("data/events.json?v=" + Math.floor(Date.now() / 1000))
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

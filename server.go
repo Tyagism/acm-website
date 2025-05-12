@@ -367,19 +367,27 @@ func handleOptions(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func main() {
-	// Initialize data store
-	log.Println("Starting ACM website server...")
+// noCacheMiddleware adds headers to prevent caching for certain file types
+func noCacheMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Add no-cache headers for JSON and image files
+		path := r.URL.Path
+		if strings.HasSuffix(path, ".json") ||
+			strings.HasSuffix(path, ".jpg") ||
+			strings.HasSuffix(path, ".jpeg") ||
+			strings.HasSuffix(path, ".png") {
+			w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+			w.Header().Set("Pragma", "no-cache")
+			w.Header().Set("Expires", "0")
+		}
+		next.ServeHTTP(w, r)
+	})
+}
 
-	dataStore := NewDataStore()
-	log.Println("Initializing data store...")
-	if err := dataStore.Initialize(); err != nil {
-		log.Fatalf("Failed to initialize data store: %v", err)
-	}
-	log.Println("Data store initialized successfully")
-
+// setupAPIRoutes configures all the API endpoints
+func setupAPIRoutes(mux *http.ServeMux, dataStore *DataStore) {
 	// Ping endpoint for checking server status
-	http.HandleFunc("/api/ping", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/ping", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			handleOptions(w, r)
 			return
@@ -392,14 +400,16 @@ func main() {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
+		// Include a restart timestamp so clients can detect server restarts
 		json.NewEncoder(w).Encode(map[string]string{
-			"status":  "ok",
-			"message": "Server is running",
+			"status":       "ok",
+			"message":      "Server is running",
+			"restart_time": fmt.Sprintf("%d", time.Now().Unix()),
 		})
 	})
 
 	// Application submission endpoint
-	http.HandleFunc("/api/applications", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/applications", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			handleOptions(w, r)
 			return
@@ -450,7 +460,7 @@ func main() {
 	})
 
 	// Contact form submission endpoint
-	http.HandleFunc("/api/contact", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/contact", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			handleOptions(w, r)
 			return
@@ -497,7 +507,7 @@ func main() {
 	})
 
 	// Admin login endpoint
-	http.HandleFunc("/api/admin/login", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/admin/login", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -528,7 +538,7 @@ func main() {
 	})
 
 	// Get applications data endpoint
-	http.HandleFunc("/api/admin/applications", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/admin/applications", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -546,7 +556,7 @@ func main() {
 	})
 
 	// Get messages data endpoint
-	http.HandleFunc("/api/admin/messages", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/admin/messages", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -564,7 +574,7 @@ func main() {
 	})
 
 	// Export applications to CSV endpoint
-	http.HandleFunc("/api/admin/export/applications", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/admin/export/applications", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -596,11 +606,8 @@ func main() {
 				return
 			}
 
-			// Create a temporary DataStore to use the export function
-			tempDS := &DataStore{}
-
 			// Convert the applications to CSV
-			csvData, err := tempDS.ExportApplicationsCSV()
+			csvData, err := dataStore.ExportApplicationsCSV()
 			if err != nil {
 				log.Printf("Error exporting applications to CSV: %v", err)
 				http.Error(w, "Failed to generate CSV", http.StatusInternalServerError)
@@ -633,7 +640,7 @@ func main() {
 	})
 
 	// Export messages to CSV endpoint
-	http.HandleFunc("/api/admin/export/messages", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/admin/export/messages", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -665,11 +672,8 @@ func main() {
 				return
 			}
 
-			// Create a temporary DataStore to use the export function
-			tempDS := &DataStore{}
-
 			// Convert the messages to CSV
-			csvData, err := tempDS.ExportMessagesCSV()
+			csvData, err := dataStore.ExportMessagesCSV()
 			if err != nil {
 				log.Printf("Error exporting messages to CSV: %v", err)
 				http.Error(w, "Failed to generate CSV", http.StatusInternalServerError)
@@ -700,15 +704,41 @@ func main() {
 		// Write the CSV data to the response
 		w.Write(csvData)
 	})
+}
 
-	// Set up a simple file server for static files as the last handler
-	http.Handle("/", http.FileServer(http.Dir(".")))
+// setupFileServer configures the static file server
+func setupFileServer(mux *http.ServeMux) {
+	fileServer := http.FileServer(http.Dir("."))
 
-	// Start the server
-	port := "8081"
-	log.Printf("Server starting on port %s...", port)
-	log.Printf("Open http://localhost:%s in your browser", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Printf("Server error: %v", err)
-	}
+	// Wrap the file server with the no-cache middleware
+	mux.Handle("/", fileServer)
+}
+
+// RunMainServer is an exportable version of the main function
+func RunMainServer() {
+	log.Println("Starting ACM website server...")
+
+	// Create and initialize data store
+	dataStore := NewDataStore()
+	dataStore.Initialize()
+
+	// Create router
+	mux := http.NewServeMux()
+
+	// Set up API routes
+	setupAPIRoutes(mux, dataStore)
+
+	// Set up file server for static files
+	setupFileServer(mux)
+
+	// Create wrapped handler with middleware
+	handler := noCacheMiddleware(mux)
+
+	// Start server
+	log.Println("Server is running on http://localhost:8081")
+	log.Fatal(http.ListenAndServe(":8081", handler))
+}
+
+func main() {
+	RunMainServer()
 }

@@ -12,8 +12,18 @@
     <link rel="icon" href="acm-logo.svg" type="image/svg+xml">
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 </head>
 <body>
+    <script>
+        // This script helps ensure fresh content by reloading if needed
+        if (performance.navigation.type === 1) {
+            // This is a reload/refresh
+            localStorage.setItem('page_refreshed', 'true');
+        }
+    </script>
     <div class="page-loader">
         <div class="loader-content">
             <img src="acm-logo.svg" alt="ACM Logo" class="loader-logo">
@@ -99,8 +109,8 @@
 
                         <div class="member-preview">
                             <div class="member-avatars">
-                                <div class="member-avatar"><img src="images/member-1.jpg" alt="Member"></div>
-                                <div class="member-avatar"><img src="images/member-2.jpg" alt="Member"></div>
+                                <div class="member-avatar"><img src="images/harshit.jpg" alt="Harshit Tyagi"></div>
+                                <div class="member-avatar"><img src="images/sumit.jpg" alt="Sumit Kumar"></div>
                                 <div class="member-avatar"><img src="images/member-3.jpg" alt="Member"></div>
                                 <div class="member-avatar"><img src="images/member-4.jpg" alt="Member"></div>
                             </div>
@@ -676,5 +686,33 @@
     <script src="js/server-check.js"></script>
     <!-- Main JavaScript -->
     <script src="js/main.js"></script>
+    <script>
+        // Auto refresh mechanism - checks for server restarts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Clear image caches by adding timestamp
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                const src = img.src;
+                if (!src.includes('?t=')) {
+                    img.src = src + '?t=' + new Date().getTime();
+                }
+            });
+            
+            // Check for server restart signal
+            fetch('http://localhost:8081/api/ping?v=' + Math.floor(Date.now() / 1000))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.restart_time && localStorage.getItem('last_server_start') !== data.restart_time) {
+                        localStorage.setItem('last_server_start', data.restart_time);
+                        if (!localStorage.getItem('initial_load')) {
+                            // Only reload if this isn't the first load after opening the browser
+                            window.location.reload(true);
+                        }
+                        localStorage.setItem('initial_load', 'false');
+                    }
+                })
+                .catch(err => console.log('Server ping error (normal on first load):', err));
+        });
+    </script>
 </body>
 </html>

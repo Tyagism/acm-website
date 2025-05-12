@@ -4,16 +4,16 @@
       "name": "Executive Board",
       "members": [
         {
-          "name": "Aditya Sharma",
+          "name": "Harshit Tyagi",
           "position": "Chapter Chair",
-          "image": "images/member-1.jpg",
-          "linkedin": "https://linkedin.com/in/aditya-sharma"
+          "image": "images/harshit.jpg",
+          "linkedin": "https://www.linkedin.com/in/harshitism"
         },
         {
-          "name": "Priya Patel",
+          "name": "Sumit Kumar",
           "position": "Vice Chair",
-          "image": "images/member-2.jpg",
-          "linkedin": "https://linkedin.com/in/priya-patel"
+          "image": "images/sumit.jpg",
+          "linkedin": "https://www.linkedin.com/in/sumit-kumar-3b835b251"
         },
         {
           "name": "Rahul Gupta",

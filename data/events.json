@@ -7,7 +7,7 @@
       "date": "2025-03-15",
       "location": "USAR Campus, Lab 302",
       "attendees": 120,
-      "image": "images/event-1.jpg"
+      "image": "images/6.jpg"
     },
     {
       "id": 2,
@@ -16,7 +16,7 @@
       "date": "2025-04-22",
       "location": "USAR Innovation Hub",
       "attendees": 200,
-      "image": "images/event-2.jpg"
+      "image": "images/5.jpg"
     },
     {
       "id": 3,
@@ -25,7 +25,7 @@
       "date": "2025-05-10",
       "location": "Virtual Event",
       "attendees": 350,
-      "image": "images/event-3.jpg"
+      "image": "images/1.jpg"
     }
   ]
 }
