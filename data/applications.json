@@ -70,5 +70,23 @@
     "school": "USAR",
     "yearOfStudy": "1",
     "timestamp": "2025-05-13T00:28:19.6292747+05:30"
+  },
+  {
+    "id": "1747977819182753900",
+    "fullName": "hastfas tgadh",
+    "email": "admin@usar.acm.org",
+    "studentId": "351516515855",
+    "school": "USAR",
+    "yearOfStudy": "1",
+    "timestamp": "2025-05-23T10:53:39.1827539+05:30"
+  },
+  {
+    "id": "1747979313147865200",
+    "fullName": "sumit",
+    "email": "sumitkumar@gmail.com",
+    "studentId": "0012012",
+    "school": "USAR",
+    "yearOfStudy": "3",
+    "timestamp": "2025-05-23T11:18:33.1478652+05:30"
   }
 ]
